@@ -94,19 +94,33 @@ def export_puz(title, grid, across, down):
             continue
         else:
             break
+
     export = (
-        (("*" * depth) + " " + title + "\n\n")
+        ("\n" + ("*" * depth) + " " + title + "\n\n")
         + (("*" * (depth + 1)) + " Grid\n\n")
         + (grid + "\n\n")
-        + (("*" * (depth + 1)) + " Clues\b\n")
+        + (("*" * (depth + 1)) + " Clues\n\n")
         + ("|Solved?|Across|Notes|\n|-+-+-|\n")
         + (across)
         + ("|-+-+-|\n||Down||\n|-+-+-|\n")
         + (down)
     )
 
-    print("Here's your formatted puzzle:\n\n" + export)
+    print(f"\nHere's your formatted puzzle:\n{export}")
 
+    while True:
+        expath = input("Where would you like to export the puzzle to?: ")
+        try:
+            save = open(expath, "a")
+        except FileNotFoundError:
+            print("Path broken! Make sure the folders exist and try entering an absolute path.")
+            continue
+        else:
+            print(f"Appending {title} to {expath}")
+            save.write(export)
+            save.close()
+            print("Save complete!")
+            break
 
 
 import_puz()
