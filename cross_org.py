@@ -26,19 +26,68 @@ def import_puz():
 def process_puz(source):
     """Extract information and format the puzzle."""
     # Initial processing: join the one-item list into a string, strip, split
-    # the string on the empty bites to make a new list, filter out empty
+    # the string on a control character to make a new list, filter out empty
     # entries, and pass it back to the source variable.
+    grid = "|"
+    columns = 0
+    across = ""
+    down = ""
+    while True:
+        try:
+            wh = list(int(x) for x in input("Please enter the dimensions of the puzzle in the format WxH with no spaces: ").lower().split("x")) # noqa
+        except ValueError:
+            print("Please make sure you're entering the dimensions correctly!")
+            continue
+        else:
+            match len(wh):
+                case 2:
+                    break
+                case _:
+                    print("Please make sure you're entering the dimensions correctly!") # noqa
+                    continue
+    while True:
+        try:
+            cluecount = list(int(x) for x in input("Please enter the number of across and down clues in the form AxD: ").lower().split("x")) # noqa
+        except ValueError:
+            print("Please make sure you're entering the numbers correctly!")
+            continue
+        else:
+            match len(wh):
+                case 2:
+                    break
+                case _:
+                    print("Please make sure you're entering the numbers correctly!") # noqa
+                    continue
+
     source = list(filter(None, ((''.join(source)).strip()).split("\x00")))
-    print(source)
 
     # Slice the list into a few sub-lists.
-    metadata = source[0:6]
-    clues = source[6:]
-    print(metadata)
-    print(clues)
+    metadata = '-'.join((' by '.join(source[4:6])).split("-")[1:])
+    title = metadata[(wh[0] * wh[1] - 1):]
+
+    for i in metadata:
+        columns += 1
+        match i:
+            case "-":
+                grid += "|"
+            case ".":
+                grid += "|#"
+            case _:
+                break
+
+        if columns == wh[0]: grid += "\n|"; columns = 0
+    columns = 0
+
+    for i in source[7:(len(source)-1)]:
+        if source.index(i) % 2 == 0:
+            down += "||" + str(i) + "||\n"
+        else:
+            across += "||" + str(i) + "||\n"
+
+    export_puz(title, grid, across, down)
 
 
-def export_puz(blanks, clues):
+def export_puz(title, grid, across, down):
     """Format the data and write it to a file."""
     while True:
         try:
@@ -49,11 +98,14 @@ def export_puz(blanks, clues):
         else:
             break
     export = (
-        (("*" * depth) + " Title\n\n")
+        (("*" * depth) + " " + title + "\n\n")
         + (("*" * (depth + 1)) + " Grid\n\n")
-        + (((("|" * 8) + "\n") * 7) + "\n")
+        + (grid + "\n\n")
         + (("*" * (depth + 1)) + " Clues\n\n")
         + ("|Solved?|Across|Notes|\n|-+-+-|\n")
+        + (across)
+        + ("|-+-+-|\n||Down||\n|-+-+-|\n")
+        + (down)
 
 
     )
@@ -62,3 +114,5 @@ def export_puz(blanks, clues):
 
 
 import_puz()
+
+#  LocalWords:  noqa WxH
