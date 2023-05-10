@@ -1,6 +1,3 @@
-import re
-
-
 def import_puz():
     """Import the puz file, validate it, and send it to the process func."""
     while True:
@@ -101,15 +98,14 @@ def export_puz(title, grid, across, down):
         (("*" * depth) + " " + title + "\n\n")
         + (("*" * (depth + 1)) + " Grid\n\n")
         + (grid + "\n\n")
-        + (("*" * (depth + 1)) + " Clues\n\n")
+        + (("*" * (depth + 1)) + " Clues\b\n")
         + ("|Solved?|Across|Notes|\n|-+-+-|\n")
         + (across)
         + ("|-+-+-|\n||Down||\n|-+-+-|\n")
         + (down)
-
-
     )
-    print(export)
+
+    print("Here's your formatted puzzle:\n\n" + export)
 
 
 
