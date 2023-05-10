@@ -46,19 +46,6 @@ def process_puz(source):
                 case _:
                     print("Please make sure you're entering the dimensions correctly!") # noqa
                     continue
-    while True:
-        try:
-            cluecount = list(int(x) for x in input("Please enter the number of across and down clues in the form AxD: ").lower().split("x")) # noqa
-        except ValueError:
-            print("Please make sure you're entering the numbers correctly!")
-            continue
-        else:
-            match len(wh):
-                case 2:
-                    break
-                case _:
-                    print("Please make sure you're entering the numbers correctly!") # noqa
-                    continue
 
     # Form the source list by splitting and then filtering empty entries.
     source = list(filter(None, ((''.join(source)).strip()).split("\x00")))
@@ -108,14 +95,14 @@ def export_puz(title, grid, across, down):
     # Assemble the export, a string containing various formatting details plus
     # the grid and clues.
     export = (
-        ("\n" + ("*" * depth) + " " + title + "\n\n")
-        + (("*" * (depth + 1)) + " Grid\n\n")
-        + (grid + "\n\n")
-        + (("*" * (depth + 1)) + " Clues\n\n")
-        + ("|Solved?|Across|Notes|\n|-+-+-|\n")
-        + (across)
-        + ("|-+-+-|\n||Down||\n|-+-+-|\n")
-        + (down)
+        "\n" + ("*" * depth) + " " + title + "\n\n"
+        + ("*" * (depth + 1)) + " Grid\n\n"
+        + grid + "\n\n"
+        + ("*" * (depth + 1)) + " Clues\n\n"
+        + "|Solved?|Across|Notes|\n|-+-+-|\n"
+        + across
+        + "|-+-+-|\n||Down||\n|-+-+-|\n"
+        + down
     )
 
     print(f"\nHere's your formatted puzzle:\n{export}")
