@@ -1,3 +1,6 @@
+"""Script to input a .puz file and export as an Org-Mode table."""
+
+
 def import_puz():
     """Import the puz file, validate it, and send it to the process func."""
     while True:
@@ -22,13 +25,14 @@ def import_puz():
 
 def process_puz(source):
     """Extract information and format the puzzle."""
-    # Initial processing: join the one-item list into a string, strip, split
-    # the string on a control character to make a new list, filter out empty
-    # entries, and pass it back to the source variable.
-    grid = "|"
+    # Variable setup for later.
+    grid = "| "
     columns = 0
     across = ""
     down = ""
+
+    # Read user input and perform string comprehension to get integer sets for
+    # puzzle size and clue distribution.
     while True:
         try:
             wh = list(int(x) for x in input("Please enter the dimensions of the puzzle in the format WxH with no spaces: ").lower().split("x")) # noqa
@@ -56,25 +60,30 @@ def process_puz(source):
                     print("Please make sure you're entering the numbers correctly!") # noqa
                     continue
 
+    # Form the source list by splitting and then filtering empty entries.
     source = list(filter(None, ((''.join(source)).strip()).split("\x00")))
 
-    # Slice the list into a few sub-lists.
+    # Form the metadata by splitting, removing some information, adding the
+    # "by" join and rejoining into a string. Title is pulled as a string."
     metadata = '-'.join((' by '.join(source[4:6])).split("-")[1:])
     title = metadata[(wh[0] * wh[1] - 1):]
 
+    # Use puz conventions ("-" is empty and "." is black) to build the grid.
     for i in metadata:
         columns += 1
         match i:
             case "-":
-                grid += "|"
+                grid += "| "
             case ".":
                 grid += "|#"
             case _:
                 break
 
-        if columns == wh[0]: grid += "\n|"; columns = 0
+        if columns == wh[0]: grid += "\n| "; columns = 0
+    grid += "|"
     columns = 0
 
+    # Assemble clues table by filtering every other entry into the relevant list.
     for i in source[7:(len(source)-1)]:
         if source.index(i) % 2 == 0:
             down += "||" + str(i) + "||\n"
@@ -86,6 +95,7 @@ def process_puz(source):
 
 def export_puz(title, grid, across, down):
     """Format the data and write it to a file."""
+    # Get header depth to export at.
     while True:
         try:
             depth = int(input("Export the puzzle at what header depth?: "))
@@ -95,6 +105,8 @@ def export_puz(title, grid, across, down):
         else:
             break
 
+    # Assemble the export, a string containing various formatting details plus
+    # the grid and clues.
     export = (
         ("\n" + ("*" * depth) + " " + title + "\n\n")
         + (("*" * (depth + 1)) + " Grid\n\n")
@@ -108,6 +120,7 @@ def export_puz(title, grid, across, down):
 
     print(f"\nHere's your formatted puzzle:\n{export}")
 
+    # Append the puzzle to an existing file or create the file if it doesn't exist.
     while True:
         expath = input("Where would you like to export the puzzle to?: ")
         try:
@@ -123,6 +136,7 @@ def export_puz(title, grid, across, down):
             break
 
 
+# Functional call to run the program.
 import_puz()
 
 #  LocalWords:  noqa WxH
